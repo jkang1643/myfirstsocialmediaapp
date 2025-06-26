@@ -237,7 +237,7 @@ export default function Profile() {
         <h3 className="text-xl font-semibold text-gray-900 mb-4">Your Posts</h3>
         {userPosts.length === 0 ? (
           <div className="text-center py-8 bg-white border border-gray-200 rounded-lg">
-            <p className="text-gray-500">You haven't posted anything yet.</p>
+            <p className="text-gray-500">You haven&apos;t posted anything yet.</p>
           </div>
         ) : (
           <div className="space-y-4">
