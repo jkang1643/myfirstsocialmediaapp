@@ -1,48 +1,52 @@
-import Link from "next/link";
+"use client";
+
+import { useState } from "react";
+import { useAuth } from "../lib/hooks/useAuth";
+import SignInWithGoogle from "../components/SignInWithGoogle";
+import TabNavigation from "../components/TabNavigation";
+import HomeFeed from "../components/HomeFeed";
+import Profile from "../components/Profile";
+import CreatePost from "../components/CreatePost";
 
 export default function Home() {
+  const { user, loading } = useAuth();
+  const [activeTab, setActiveTab] = useState("home");
+
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center p-8 bg-gradient-to-br from-blue-50 to-indigo-100">
+        <div className="bg-white rounded-2xl shadow-xl p-8 max-w-md w-full">
+          <h1 className="text-3xl font-bold text-center text-gray-800 mb-2">
+            Welcome to SocialApp
+          </h1>
+          <p className="text-center text-gray-600 mb-8">
+            Connect with friends and share your moments
+          </p>
+          <SignInWithGoogle />
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-8">
-      <div>
-        <h2 className="text-2xl font-semibold text-center border p-4 font-mono rounded-md">
-          Get started by choosing a template path from the /paths/ folder.
-        </h2>
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-2xl mx-auto bg-white min-h-screen shadow-lg">
+        <TabNavigation activeTab={activeTab} setActiveTab={setActiveTab} />
+        
+        <main className="p-4">
+          {activeTab === "home" && <HomeFeed />}
+          {activeTab === "profile" && <Profile />}
+          {activeTab === "create" && <CreatePost />}
+        </main>
       </div>
-      <div>
-        <h1 className="text-6xl font-bold text-center">Make anything you imagine 🪄</h1>
-        <h2 className="text-2xl text-center font-light text-gray-500 pt-4">
-          This whole page will be replaced when you run your template path.
-        </h2>
-      </div>
-      <div className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="border rounded-lg p-6 hover:bg-gray-100 transition-colors">
-          <h3 className="text-xl font-semibold">AI Chat App</h3>
-          <p className="mt-2 text-sm text-gray-600">
-            An intelligent conversational app powered by AI models, featuring real-time responses
-            and seamless integration with Next.js and various AI providers.
-          </p>
-        </div>
-        <div className="border rounded-lg p-6 hover:bg-gray-100 transition-colors">
-          <h3 className="text-xl font-semibold">AI Image Generation App</h3>
-          <p className="mt-2 text-sm text-gray-600">
-            Create images from text prompts using AI, powered by the Replicate API and Next.js.
-          </p>
-        </div>
-        <div className="border rounded-lg p-6 hover:bg-gray-100 transition-colors">
-          <h3 className="text-xl font-semibold">Social Media App</h3>
-          <p className="mt-2 text-sm text-gray-600">
-            A feature-rich social platform with user profiles, posts, and interactions using
-            Firebase and Next.js.
-          </p>
-        </div>
-        <div className="border rounded-lg p-6 hover:bg-gray-100 transition-colors">
-          <h3 className="text-xl font-semibold">Voice Notes App</h3>
-          <p className="mt-2 text-sm text-gray-600">
-            A voice-based note-taking app with real-time transcription using Deepgram API, 
-            Firebase integration for storage, and a clean, simple interface built with Next.js.
-          </p>
-        </div>
-      </div>
-    </main>
+    </div>
   );
 }
