@@ -7,8 +7,18 @@
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.0-38B2AC?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com/)
 [![Vercel](https://img.shields.io/badge/Vercel-Deployed-black?style=for-the-badge&logo=vercel)](https://vercel.com/)
 
-> **Live Demo:** [https://myfirstsocialmediaapp.vercel.app/](https://myfirstsocialmediaapp.vercel.app/)
-> ![myfirstsocialmediappscreenshot](https://github.com/user-attachments/assets/d1b68f14-4079-4785-9f53-46c6fda1dc02)
+
+<h1 align="center">
+  <a href="https://myfirstsocialmediaapp.vercel.app/" target="_blank">
+    🚀 Live Demo: myfirstsocialmediaapp.vercel.app
+  </a>
+</h1>
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/d1b68f14-4079-4785-9f53-46c6fda1dc02" alt="SocialApp Screenshot" width="600"/>
+</p>
+
+A modern, full-stack social media application built with Next.js 14, React, TypeScript, and Firebase. Features real-time posts, Google authentication, image sharing, voice notes, and AI-powered features.
 
 
 A modern, full-stack social media application built with Next.js 14, React, TypeScript, and Firebase. Features real-time posts, Google authentication, image sharing, voice notes, and AI-powered features.
