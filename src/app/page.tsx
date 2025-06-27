@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "../lib/hooks/useAuth";
 import SignInWithGoogle from "../components/SignInWithGoogle";
 import TabNavigation from "../components/TabNavigation";
@@ -11,8 +11,30 @@ import CreatePost from "../components/CreatePost";
 export default function Home() {
   const { user, loading } = useAuth();
   const [activeTab, setActiveTab] = useState("home");
+  const [mounted, setMounted] = useState(false);
 
-  if (loading) {
+  useEffect(() => {
+    setMounted(true);
+    
+    // Handle mobile-specific issues
+    if (typeof window !== 'undefined') {
+      // Prevent zoom on input focus (iOS)
+      const preventZoom = (e: any) => {
+        if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+          e.target.style.fontSize = '16px';
+        }
+      };
+      
+      document.addEventListener('focusin', preventZoom);
+      
+      return () => {
+        document.removeEventListener('focusin', preventZoom);
+      };
+    }
+  }, []);
+
+  // Show loading state until component is mounted
+  if (!mounted || loading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
