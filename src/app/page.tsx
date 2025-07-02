@@ -7,11 +7,15 @@ import TabNavigation from "../components/TabNavigation";
 import HomeFeed from "../components/HomeFeed";
 import Profile from "../components/Profile";
 import CreatePost from "../components/CreatePost";
+import { motion } from "framer-motion";
+import TopBar from "../components/TopBar";
+import StoriesCarousel from "../components/StoriesCarousel";
 
 export default function Home() {
   const { user, loading } = useAuth();
   const [activeTab, setActiveTab] = useState("home");
   const [mounted, setMounted] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   useEffect(() => {
     setMounted(true);
@@ -33,6 +37,12 @@ export default function Home() {
     }
   }, []);
 
+  // Function to refresh home page
+  const refreshHome = () => {
+    setRefreshKey(prev => prev + 1);
+    setActiveTab("home");
+  };
+
   // Show loading state until component is mounted
   if (!mounted || loading) {
     return (
@@ -44,31 +54,52 @@ export default function Home() {
 
   if (!user) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center p-8 bg-gradient-to-br from-blue-50 to-indigo-100">
-        <div className="bg-white rounded-2xl shadow-xl p-8 max-w-md w-full">
+      <div className="flex min-h-screen flex-col items-center justify-center p-8 bg-[#5a4fff]">
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: 'easeOut' }}
+          className="bg-white rounded-2xl shadow-2xl p-10 max-w-md w-full flex flex-col items-center"
+        >
+          <div className="flex items-center gap-3 mb-6">
+            <div className="bg-[#5a4fff] rounded-lg w-12 h-12 flex items-center justify-center text-white text-2xl font-bold shadow-md">S</div>
+            <span className="text-2xl font-extrabold text-[#5a4fff] tracking-tight">SocialApp</span>
+          </div>
           <h1 className="text-3xl font-bold text-center text-gray-800 mb-2">
             Welcome to SocialApp
           </h1>
-          <p className="text-center text-gray-600 mb-8">
+          <p className="text-center text-gray-500 mb-8 text-base">
             Connect with friends and share your moments
           </p>
-          <SignInWithGoogle />
-        </div>
+          <div className="w-full flex flex-col gap-4">
+            <SignInWithGoogle />
+          </div>
+        </motion.div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-2xl mx-auto bg-white min-h-screen shadow-lg">
-        <TabNavigation activeTab={activeTab} setActiveTab={setActiveTab} />
-        
+    <div className="min-h-screen bg-gray-50 flex w-full">
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, ease: 'easeOut' }}
+        className="max-w-2xl mx-auto bg-white min-h-screen shadow-lg flex-1"
+      >
+        <TopBar onAddPost={() => setActiveTab('create')} onRefreshHome={refreshHome} />
+        <StoriesCarousel />
         <main className="p-4">
-          {activeTab === "home" && <HomeFeed />}
+          {activeTab === "home" && <HomeFeed key={refreshKey} onRefresh={refreshHome} />}
           {activeTab === "profile" && <Profile />}
-          {activeTab === "create" && <CreatePost />}
+          {activeTab === "create" && <CreatePost onPostCreated={refreshHome} />}
         </main>
-      </div>
+        <TabNavigation 
+          activeTab={activeTab} 
+          setActiveTab={setActiveTab} 
+          onRefreshHome={refreshHome}
+        />
+      </motion.div>
     </div>
   );
 }

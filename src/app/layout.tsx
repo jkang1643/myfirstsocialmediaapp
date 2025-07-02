@@ -1,5 +1,8 @@
 import "./globals.css";
 import { AuthProvider } from "../lib/contexts/AuthContext";
+import { motion } from "framer-motion";
+import Sidebar from "../components/Sidebar";
+import RightSidebar from "../components/RightSidebar";
 
 export const metadata = {
   title: "Social Media App",
@@ -19,9 +22,24 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
       </head>
-      <body>
+      <body className="bg-white min-h-screen">
         <AuthProvider>
-          {children}
+          <div className="flex min-h-screen w-full">
+            {/* Left Sidebar */}
+            <aside className="hidden lg:flex flex-col w-[250px] bg-[#5a4fff] text-white p-0">
+              <Sidebar />
+            </aside>
+
+            {/* Main Content */}
+            <main className="flex-1 flex flex-col items-stretch bg-white px-0 md:px-6 py-6">
+              {children}
+            </main>
+
+            {/* Right Sidebar */}
+            <aside className="hidden xl:flex flex-col w-[300px] bg-white p-4 border-l border-gray-100">
+              <RightSidebar />
+            </aside>
+          </div>
         </AuthProvider>
       </body>
     </html>

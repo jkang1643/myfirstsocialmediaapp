@@ -6,9 +6,10 @@ import { Home, User, Plus, LogOut } from 'lucide-react';
 interface TabNavigationProps {
   activeTab: string;
   setActiveTab: (tab: string) => void;
+  onRefreshHome?: () => void;
 }
 
-export default function TabNavigation({ activeTab, setActiveTab }: TabNavigationProps) {
+export default function TabNavigation({ activeTab, setActiveTab, onRefreshHome }: TabNavigationProps) {
   const { signOut } = useAuth();
 
   const tabs = [
@@ -16,6 +17,15 @@ export default function TabNavigation({ activeTab, setActiveTab }: TabNavigation
     { id: "create", label: "Create", icon: Plus },
     { id: "profile", label: "Profile", icon: User },
   ];
+
+  const handleTabClick = (tabId: string) => {
+    if (tabId === "home" && activeTab === "home" && onRefreshHome) {
+      // If home tab is already active, refresh the home page
+      onRefreshHome();
+    } else {
+      setActiveTab(tabId);
+    }
+  };
 
   return (
     <nav className="bg-white border-b border-gray-200 sticky top-0 z-10">
@@ -28,7 +38,7 @@ export default function TabNavigation({ activeTab, setActiveTab }: TabNavigation
             return (
               <button
                 key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
+                onClick={() => handleTabClick(tab.id)}
                 className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors ${
                   activeTab === tab.id
                     ? "bg-blue-100 text-blue-600"

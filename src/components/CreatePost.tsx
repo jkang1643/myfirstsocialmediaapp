@@ -4,8 +4,13 @@ import { useState } from 'react';
 import { useAuth } from '../lib/hooks/useAuth';
 import { addDocument } from '../lib/firebase/firebaseUtils';
 import { Image, Send, X } from 'lucide-react';
+import { motion } from "framer-motion";
 
-export default function CreatePost() {
+interface CreatePostProps {
+  onPostCreated?: () => void;
+}
+
+export default function CreatePost({ onPostCreated }: CreatePostProps) {
   const { user } = useAuth();
   const [content, setContent] = useState('');
   const [imageFile, setImageFile] = useState<File | null>(null);
@@ -63,6 +68,11 @@ export default function CreatePost() {
       setImageFile(null);
       setImagePreview('');
       
+      // Call the callback function to refresh home page
+      if (onPostCreated) {
+        onPostCreated();
+      }
+      
       alert('Post created successfully!');
     } catch (error) {
       console.error('Error creating post:', error);
@@ -73,7 +83,12 @@ export default function CreatePost() {
   };
 
   return (
-    <div className="bg-white border border-gray-200 rounded-lg p-6">
+    <motion.div
+      className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm"
+      initial={{ opacity: 0, y: 30 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, ease: 'easeOut' }}
+    >
       <h2 className="text-xl font-semibold text-gray-900 mb-4">Create a Post</h2>
       
       <form onSubmit={handleSubmit} className="space-y-4">
@@ -84,7 +99,7 @@ export default function CreatePost() {
             onChange={(e) => setContent(e.target.value)}
             placeholder="What's on your mind?"
             rows={4}
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+            className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#5a4fff] resize-none bg-gray-50 text-gray-800"
             required
           />
         </div>
@@ -95,7 +110,7 @@ export default function CreatePost() {
             <img
               src={imagePreview}
               alt="Preview"
-              className="w-full max-h-64 object-cover rounded-lg"
+              className="w-full max-h-64 object-cover rounded-2xl"
             />
             <button
               type="button"
@@ -130,7 +145,7 @@ export default function CreatePost() {
           <button
             type="submit"
             disabled={isSubmitting || !content.trim()}
-            className="flex items-center space-x-2 px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+            className="flex items-center space-x-2 px-6 py-2 bg-[#5a4fff] text-white rounded-2xl hover:bg-[#6c5fff] disabled:bg-gray-300 disabled:cursor-not-allowed transition-all"
           >
             {isSubmitting ? (
               <>
@@ -146,6 +161,6 @@ export default function CreatePost() {
           </button>
         </div>
       </form>
-    </div>
+    </motion.div>
   );
 } 

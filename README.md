@@ -21,7 +21,6 @@
 A modern, full-stack social media application built with Next.js 14, React, TypeScript, and Firebase. Features real-time posts, Google authentication, image sharing, voice notes, and AI-powered features.
 
 
-A modern, full-stack social media application built with Next.js 14, React, TypeScript, and Firebase. Features real-time posts, Google authentication, image sharing, voice notes, and AI-powered features.
 
 ## ✨ Features
 
