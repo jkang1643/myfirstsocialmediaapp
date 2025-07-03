@@ -1,14 +1,8 @@
 'use client';
+import { useEffect, useState } from 'react';
 import { motion } from "framer-motion";
-import { FaPlus, FaGift } from "react-icons/fa";
-
-const friendSuggestions = [
-  { name: "Julia Smith", handle: "@juliasmith", avatar: "https://randomuser.me/api/portraits/women/10.jpg" },
-  { name: "Vermillion D. Gray", handle: "@vermilliongray", avatar: "https://randomuser.me/api/portraits/men/11.jpg" },
-  { name: "Mai Senpai", handle: "@maisenpai", avatar: "https://randomuser.me/api/portraits/women/12.jpg" },
-  { name: "Azunyan U. Wu", handle: "@azunyandesu", avatar: "https://randomuser.me/api/portraits/women/13.jpg" },
-  { name: "Oarack Babama", handle: "@obama21", avatar: "https://randomuser.me/api/portraits/men/14.jpg" },
-];
+import { FaPlus, FaGift, FaGoogle } from "react-icons/fa";
+import { getDocuments } from '../lib/firebase/firebaseUtils';
 
 const profileActivity = {
   followers: 1158,
@@ -27,6 +21,35 @@ const upcomingEvents = [
 ];
 
 export default function RightSidebar() {
+  const [users, setUsers] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchUsersFromPosts = async () => {
+      try {
+        const posts = await getDocuments('posts');
+        // Extract unique users from posts
+        const userMap: { [userId: string]: any } = {};
+        posts.forEach((post: any) => {
+          if (post.userId && !userMap[post.userId]) {
+            userMap[post.userId] = {
+              userId: post.userId,
+              displayName: post.userName || post.userEmail || 'Unknown',
+              email: post.userEmail || '',
+              photoURL: post.userPhotoURL || '',
+            };
+          }
+        });
+        setUsers(Object.values(userMap));
+      } catch (error) {
+        setUsers([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchUsersFromPosts();
+  }, []);
+
   return (
     <motion.div
       initial={{ x: 40, opacity: 0 }}
@@ -41,18 +64,35 @@ export default function RightSidebar() {
           <button className="text-xs text-[#5a4fff] font-semibold">See All</button>
         </div>
         <div className="flex flex-col gap-3">
-          {friendSuggestions.map((user, idx) => (
+          {loading ? (
+            <span className="text-gray-400 text-sm">Loading...</span>
+          ) : users.length === 0 ? (
+            <span className="text-gray-400 text-sm">No users found</span>
+          ) : users.map((user, idx) => (
             <motion.div
-              key={user.handle}
+              key={user.id || user.email || idx}
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: idx * 0.07, duration: 0.3, ease: "easeOut" }}
               className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 transition cursor-pointer"
             >
-              <img src={user.avatar} alt={user.name} className="w-9 h-9 rounded-full object-cover" />
-              <div className="flex-1">
-                <div className="font-semibold text-sm text-[#222]">{user.name}</div>
-                <div className="text-xs text-gray-400">{user.handle}</div>
+              {/* Avatar with colored ring */}
+              <div className="bg-gradient-to-tr from-orange-400 via-pink-500 to-yellow-400 p-1 rounded-full">
+                <div className="bg-white p-1 rounded-full">
+                  <img
+                    src={user.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.displayName || user.email || 'U')}`}
+                    alt={user.displayName || user.email || 'User'}
+                    className="w-12 h-12 rounded-full object-cover border-2 border-white"
+                  />
+                </div>
+              </div>
+              {/* User info vertical */}
+              <div className="flex-1 flex flex-col justify-center">
+                <div className="font-semibold text-sm text-[#222] flex items-center gap-1">
+                  {user.displayName || user.email || 'Unknown'}
+                  {user.providerId === 'google.com' && <FaGoogle className="text-[#4285F4] ml-1" title="Google user" />}
+                </div>
+                <div className="text-xs text-gray-400">{user.email}</div>
               </div>
               <button className="bg-[#5a4fff] text-white rounded-full p-2 hover:bg-[#6c5fff] transition">
                 <FaPlus />

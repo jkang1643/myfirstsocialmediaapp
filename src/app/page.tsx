@@ -3,19 +3,20 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "../lib/hooks/useAuth";
 import SignInWithGoogle from "../components/SignInWithGoogle";
-import TabNavigation from "../components/TabNavigation";
 import HomeFeed from "../components/HomeFeed";
 import Profile from "../components/Profile";
 import CreatePost from "../components/CreatePost";
 import { motion } from "framer-motion";
 import TopBar from "../components/TopBar";
 import StoriesCarousel from "../components/StoriesCarousel";
+import { useHomeRefresh } from "../lib/contexts/HomeRefreshContext";
 
 export default function Home() {
   const { user, loading } = useAuth();
   const [activeTab, setActiveTab] = useState("home");
   const [mounted, setMounted] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
+  const { refreshCount } = useHomeRefresh();
 
   useEffect(() => {
     setMounted(true);
@@ -42,6 +43,14 @@ export default function Home() {
     setRefreshKey(prev => prev + 1);
     setActiveTab("home");
   };
+
+  // Listen for refreshCount changes from context
+  useEffect(() => {
+    if (mounted) {
+      refreshHome();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [refreshCount]);
 
   // Show loading state until component is mounted
   if (!mounted || loading) {
@@ -81,24 +90,21 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gray-50 flex w-full">
+      {/* Sidebar is now only rendered in layout.tsx */}
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, ease: 'easeOut' }}
         className="max-w-2xl mx-auto bg-white min-h-screen shadow-lg flex-1"
       >
-        <TopBar onAddPost={() => setActiveTab('create')} onRefreshHome={refreshHome} />
+        <TopBar onAddPost={() => setActiveTab('create')} />
         <StoriesCarousel />
         <main className="p-4">
           {activeTab === "home" && <HomeFeed key={refreshKey} onRefresh={refreshHome} />}
           {activeTab === "profile" && <Profile />}
           {activeTab === "create" && <CreatePost onPostCreated={refreshHome} />}
         </main>
-        <TabNavigation 
-          activeTab={activeTab} 
-          setActiveTab={setActiveTab} 
-          onRefreshHome={refreshHome}
-        />
+        {/* TabNavigation removed */}
       </motion.div>
     </div>
   );

@@ -3,6 +3,8 @@ import { motion } from "framer-motion";
 import { FaHome, FaList, FaUserFriends, FaCube, FaCreditCard, FaCog, FaCommentDots, FaStar, FaSignOutAlt } from "react-icons/fa";
 import { useAuth } from "../lib/hooks/useAuth";
 import Link from "next/link";
+import { useHomeRefresh } from "../lib/contexts/HomeRefreshContext";
+import { usePathname, useRouter } from "next/navigation";
 
 const navItems = [
   { label: "Feed", icon: <FaHome />, href: "/", tab: "home" },
@@ -14,8 +16,25 @@ const navItems = [
   { label: "Help & Support", icon: <FaCommentDots />, href: "/help", tab: "help" },
 ];
 
+interface SidebarProps {
+  onRefreshHome?: () => void;
+}
+
 export default function Sidebar() {
   const { user, signOut } = useAuth();
+  const { triggerRefresh } = useHomeRefresh();
+  const pathname = usePathname();
+  const router = useRouter();
+
+  const handleFeedClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (pathname === "/") {
+      triggerRefresh();
+    } else {
+      router.push("/");
+    }
+  };
+
   return (
     <motion.div
       initial={{ x: -40, opacity: 0 }}
@@ -24,7 +43,7 @@ export default function Sidebar() {
       className="flex flex-col h-full min-h-screen"
     >
       {/* Logo */}
-      <div className="flex items-center gap-3 mb-8 mt-2">
+      <div className="flex items-center gap-3 mb-8 mt-2 cursor-pointer select-none" onClick={triggerRefresh} title="Return to Home">
         <div className="bg-white rounded-lg w-10 h-10 flex items-center justify-center text-[#5a4fff] text-xl font-bold shadow">S</div>
         <span className="text-xl font-extrabold tracking-tight">SocialApp</span>
       </div>
@@ -38,7 +57,17 @@ export default function Sidebar() {
       </div>
       {/* Navigation Menu */}
       <nav className="flex flex-col gap-2 mb-6">
-        {navItems.map((item, idx) => (
+        {/* Feed button with refresh logic */}
+        <a
+          href="/"
+          onClick={handleFeedClick}
+          className="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors relative text-white hover:bg-[#6c5fff] focus:outline-none cursor-pointer font-medium text-base"
+        >
+          <span className="text-lg"><FaHome /></span>
+          <span>Feed</span>
+        </a>
+        {/* Other nav items */}
+        {navItems.slice(1).map((item, idx) => (
           <Link href={item.href} key={item.label} legacyBehavior>
             <motion.a
               whileHover={{ scale: 1.04, backgroundColor: "#6c5fff" }}
